@@ -1,4 +1,6 @@
-import { GeyserGrpcClient, CommitmentLevel } from "@triton-one/yellowstone-grpc";
+import pkg from '@triton-one/yellowstone-grpc';
+const { GeyserGrpcClient, CommitmentLevel } = pkg;
+
 import { PublicKey } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
 import { TransactionFormatter } from "./utils/transaction-formatter.js";
