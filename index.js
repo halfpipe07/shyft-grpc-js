@@ -24,12 +24,12 @@ PUMP_FUN_EVENT_PARSER.addParserFromIdl(
   pumpFunIdl,
 );
 
-async function handleStream(client: Client, args: SubscribeRequest) {
+async function handleStream(client, args) {
   // Subscribe for events
   const stream = await client.subscribe();
 
   // Create `error` / `end` handler
-  const streamClosed = new Promise<void>((resolve, reject) => {
+  const streamClosed = new Promise((resolve, reject) => {
     stream.on("error", (error) => {
       console.log("ERROR", error);
       reject(error);
@@ -64,8 +64,8 @@ async function handleStream(client: Client, args: SubscribeRequest) {
   });
 
   // Send subscribe request
-  await new Promise<void>((resolve, reject) => {
-    stream.write(args, (err: any) => {
+  await new Promise((resolve, reject) => {
+    stream.write(args, (err) => {
       if (err === null || err === undefined) {
         resolve();
       } else {
@@ -80,7 +80,7 @@ async function handleStream(client: Client, args: SubscribeRequest) {
   await streamClosed;
 }
 
-async function subscribeCommand(client: Client, args: SubscribeRequest) {
+async function subscribeCommand(client, args) {
   while (true) {
     try {
       await handleStream(client, args);
@@ -97,7 +97,7 @@ const client = new Client(
   undefined,
 );
 
-const req: SubscribeRequest = {
+const req = {
   accounts: {},
   slots: {},
   transactions: {
@@ -121,7 +121,7 @@ const req: SubscribeRequest = {
 
 subscribeCommand(client, req);
 
-function decodePumpFunTxn(tx: VersionedTransactionResponse) {
+function decodePumpFunTxn(tx) {
   if (tx.meta?.err) return;
 
   const paredIxs = PUMP_FUN_IX_PARSER.parseTransactionData(
