@@ -1,5 +1,5 @@
 import yellowstoneGrpc from '@triton-one/yellowstone-grpc';
-const { GeyserGrpcClient, CommitmentLevel } = yellowstoneGrpc;
+const { Client, CommitmentLevel } = yellowstoneGrpc;
 
 import { PublicKey } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
@@ -104,7 +104,7 @@ if (!process.env.ENDPOINT || !process.env.X_TOKEN) {
   process.exit(1);
 }
 
-const client = new GeyserGrpcClient(
+const client = new Client(
   process.env.ENDPOINT,
   process.env.X_TOKEN,
   undefined,

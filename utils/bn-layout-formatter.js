@@ -1,5 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
-import { isObject } from "lodash";
+import pkg from 'lodash';
+const { isObject } = pkg;
 
 export function bnLayoutFormatter(obj) {
   for (const key in obj) {

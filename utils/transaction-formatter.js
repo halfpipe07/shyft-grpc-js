@@ -5,15 +5,15 @@ import {
 } from "@solana/web3.js";
 import { utils } from "@project-serum/anchor";
 
-export class TransactionFormatter {
-  formTransactionFromJson(data, time) {
+export function TransactionFormatter() {
+  this.formTransactionFromJson = function(data, time) {
     const rawTx = data["transaction"];
 
     const slot = data.slot;
     const version = rawTx.transaction.message.versioned ? 0 : "legacy";
 
     const meta = this.formMeta(rawTx.meta);
-    const signatures = rawTx.transaction.signatures.map((s: Buffer) =>
+    const signatures = rawTx.transaction.signatures.map((s) =>
       utils.bytes.bs58.encode(s),
     );
 
@@ -31,7 +31,7 @@ export class TransactionFormatter {
     };
   }
 
-  formTxnMessage(message) {
+  this.formTxnMessage = function(message) {
     if (!message.versioned) {
       return new Message({
         header: {
@@ -43,7 +43,7 @@ export class TransactionFormatter {
         recentBlockhash: utils.bytes.bs58.encode(
           Buffer.from(message.recentBlockhash, "base64"),
         ),
-        accountKeys: message.accountKeys?.map((d: string) =>
+        accountKeys: message.accountKeys?.map((d) =>
           Buffer.from(d, "base64"),
         ),
         instructions: message.instructions.map(
@@ -51,10 +51,6 @@ export class TransactionFormatter {
             data,
             programIdIndex,
             accounts,
-          }: {
-            data: any;
-            programIdIndex: any;
-            accounts: any;
           }) => ({
             programIdIndex: programIdIndex,
             accounts: [...accounts] || [],
@@ -74,17 +70,13 @@ export class TransactionFormatter {
           Buffer.from(message.recentBlockhash, "base64"),
         ),
         staticAccountKeys: message.accountKeys.map(
-          (k: string) => new PublicKey(Buffer.from(k, "base64")),
+          (k) => new PublicKey(Buffer.from(k, "base64")),
         ),
         compiledInstructions: message.instructions.map(
           ({
             programIdIndex,
             accounts,
             data,
-          }: {
-            programIdIndex: any;
-            accounts: any;
-            data: any;
           }) => ({
             programIdIndex: programIdIndex,
             accountKeyIndexes: [...accounts] || [],
@@ -97,10 +89,6 @@ export class TransactionFormatter {
               accountKey,
               writableIndexes,
               readonlyIndexes,
-            }: {
-              accountKey: any;
-              writableIndexes: any;
-              readonlyIndexes: any;
             }) => ({
               writableIndexes: writableIndexes || [],
               readonlyIndexes: readonlyIndexes || [],
@@ -111,7 +99,7 @@ export class TransactionFormatter {
     }
   }
 
-  formMeta(meta) {
+  this.formMeta = function(meta) {
     return {
       err: meta.errorInfo ? { err: meta.errorInfo } : null,
       fee: meta.fee,
@@ -125,29 +113,29 @@ export class TransactionFormatter {
           ? {
               writable:
                 meta.loadedWritableAddresses?.map(
-                  (address: string) =>
+                  (address) =>
                     new PublicKey(Buffer.from(address, "base64")),
                 ) || [],
               readonly:
                 meta.loadedReadonlyAddresses?.map(
-                  (address: string) =>
+                  (address) =>
                     new PublicKey(Buffer.from(address, "base64")),
                 ) || [],
             }
           : undefined,
-      innerInstructions:
-        meta.innerInstructions?.map(
-          (i: { index: number; instructions: any }) => ({
-            index: i.index || 0,
-            instructions: i.instructions.map((instruction: any) => ({
-              programIdIndex: instruction.programIdIndex,
-              accounts: [...instruction.accounts] || [],
-              data: utils.bytes.bs58.encode(
-                Buffer.from(instruction.data || "", "base64"),
-              ),
-            })),
-          }),
-        ) || [],
+          innerInstructions:
+            meta.innerInstructions?.map(
+              i => ({
+                index: i.index || 0,
+                instructions: i.instructions.map(instruction => ({
+                  programIdIndex: instruction.programIdIndex,
+                  accounts: [...instruction.accounts] || [],
+                  data: utils.bytes.bs58.encode(
+                    Buffer.from(instruction.data || "", "base64"),
+                  ),
+                })),
+              }),
+            ) || [],
     };
   }
 }

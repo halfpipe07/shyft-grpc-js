@@ -4,7 +4,8 @@ import {
   PublicKey,
 } from "@solana/web3.js";
 import { BorshCoder, EventParser } from "@project-serum/anchor";
-import { intersection } from "lodash";
+import pkg from 'lodash';
+const { intersection } = pkg;
 
 export class SolanaEventParser {
   constructor(programInfos, logger) {
@@ -12,7 +13,7 @@ export class SolanaEventParser {
     for (const programInfo of programInfos) {
       this.addParserFromIdl(
         new PublicKey(programInfo.programId),
-        programInfo.idl as Idl,
+        programInfo.idl,
       );
     }
   }
@@ -32,13 +33,13 @@ export class SolanaEventParser {
     }
   }
 
-  removeParser(programId: PublicKey | string) {
+  removeParser(programId) {
     this.eventDecoders.delete(programId);
   }
 
-  parseEvent(txn: VersionedTransactionResponse | ParsedTransactionWithMeta) {
+  parseEvent(txn) {
     try {
-      let programIds: string[] = [];
+      let programIds = [];
       if (
         txn?.transaction.message instanceof Message ||
         txn?.transaction.message instanceof MessageV0
@@ -60,7 +61,7 @@ export class SolanaEventParser {
       );
       const commonProgramIds = intersection(availableProgramIds, programIds);
       if (commonProgramIds.length) {
-        const events: any[] = [];
+        const events = [];
         for (const programId of commonProgramIds) {
           const eventCoder = this.eventDecoders.get(programId);
           if (!eventCoder) {
@@ -72,7 +73,7 @@ export class SolanaEventParser {
             eventCoder,
           );
           const eventsArray = Array.from(
-            eventParser.parseLogs(txn?.meta?.logMessages as string[]),
+            eventParser.parseLogs(txn?.meta?.logMessages)
           );
           events.push(...eventsArray);
         }
@@ -85,7 +86,7 @@ export class SolanaEventParser {
     }
   }
 
-  parseProgramLogMessages(programId: string, rawLogs: string[]) {
+  parseProgramLogMessages(programId, rawLogs) {
     try {
       const eventCoder = this.eventDecoders.get(programId);
       if (!eventCoder) {
@@ -103,7 +104,7 @@ export class SolanaEventParser {
     }
   }
 
-  getEventCoder(programId: string) {
+  getEventCoder(programId) {
     return this.eventDecoders.get(programId);
   }
 }
