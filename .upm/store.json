@@ -1,1 +1,0 @@
-{"version":2,"languages":{"nodejs-npm":{"specfileHash":"eabb24d285581ce00a96e81bca9b28f7","lockfileHash":"1dc3b49ee69665e3d539122c0907da8d","guessedImports":["@triton-one/yellowstone-grpc","@solana/web3.js","@project-serum/anchor","@shyft-to/solana-transaction-parser"],"guessedImportsHash":"b104b5040b7321eeeafcba81c3b076f5"}}}
