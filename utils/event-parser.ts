@@ -1,20 +1,13 @@
-import { ProgramInfoType } from "@shyft-to/solana-transaction-parser";
 import {
   Message,
   MessageV0,
-  ParsedTransactionWithMeta,
   PublicKey,
-  VersionedTransactionResponse,
 } from "@solana/web3.js";
-import { BorshCoder, EventParser, Idl } from "@project-serum/anchor";
+import { BorshCoder, EventParser } from "@project-serum/anchor";
 import { intersection } from "lodash";
 
 export class SolanaEventParser {
-  private eventDecoders: Map<PublicKey | string, BorshCoder>;
-  constructor(
-    programInfos: ProgramInfoType[],
-    private logger: Console,
-  ) {
+  constructor(programInfos, logger) {
     this.eventDecoders = new Map();
     for (const programInfo of programInfos) {
       this.addParserFromIdl(
@@ -24,7 +17,7 @@ export class SolanaEventParser {
     }
   }
 
-  addParserFromIdl(programId: PublicKey | string, idl: Idl) {
+  addParserFromIdl(programId, idl) {
     if (idl?.events) {
       try {
         const coder = new BorshCoder(idl);

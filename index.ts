@@ -1,36 +1,12 @@
-import Client, {
-  CommitmentLevel,
-  SubscribeRequestAccountsDataSlice,
-  SubscribeRequestFilterAccounts,
-  SubscribeRequestFilterBlocks,
-  SubscribeRequestFilterBlocksMeta,
-  SubscribeRequestFilterEntry,
-  SubscribeRequestFilterSlots,
-  SubscribeRequestFilterTransactions,
-} from "@triton-one/yellowstone-grpc";
-import { SubscribeRequestPing } from "@triton-one/yellowstone-grpc/dist/grpc/geyser";
-import { PublicKey, VersionedTransactionResponse } from "@solana/web3.js";
-import { Idl } from "@project-serum/anchor";
+import Client, { CommitmentLevel } from "@triton-one/yellowstone-grpc";
+import { PublicKey } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
-import { TransactionFormatter } from "./utils/transaction-formatter";
+import { TransactionFormatter } from "./utils/transaction-formatter.js";
 import pumpFunIdl from "./idls/pump_0.1.0.json";
-import { SolanaEventParser } from "./utils/event-parser";
-import { bnLayoutFormatter } from "./utils/bn-layout-formatter";
+import { SolanaEventParser } from "./utils/event-parser.js";
+import { bnLayoutFormatter } from "./utils/bn-layout-formatter.js";
 import dotenv from 'dotenv';
 dotenv.config();
-
-interface SubscribeRequest {
-  accounts: { [key: string]: SubscribeRequestFilterAccounts };
-  slots: { [key: string]: SubscribeRequestFilterSlots };
-  transactions: { [key: string]: SubscribeRequestFilterTransactions };
-  transactionsStatus: { [key: string]: SubscribeRequestFilterTransactions };
-  blocks: { [key: string]: SubscribeRequestFilterBlocks };
-  blocksMeta: { [key: string]: SubscribeRequestFilterBlocksMeta };
-  entry: { [key: string]: SubscribeRequestFilterEntry };
-  commitment?: CommitmentLevel | undefined;
-  accountsDataSlice: SubscribeRequestAccountsDataSlice[];
-  ping?: SubscribeRequestPing | undefined;
-}
 
 const TXN_FORMATTER = new TransactionFormatter();
 const PUMP_FUN_PROGRAM_ID = new PublicKey(

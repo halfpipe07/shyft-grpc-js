@@ -1,18 +1,12 @@
 import {
-  ConfirmedTransactionMeta,
   Message,
   MessageV0,
   PublicKey,
-  VersionedMessage,
-  VersionedTransactionResponse,
 } from "@solana/web3.js";
 import { utils } from "@project-serum/anchor";
 
 export class TransactionFormatter {
-  public formTransactionFromJson(
-    data: any,
-    time: number,
-  ): VersionedTransactionResponse {
+  formTransactionFromJson(data, time) {
     const rawTx = data["transaction"];
 
     const slot = data.slot;
@@ -37,7 +31,7 @@ export class TransactionFormatter {
     };
   }
 
-  private formTxnMessage(message: any): VersionedMessage {
+  formTxnMessage(message) {
     if (!message.versioned) {
       return new Message({
         header: {
@@ -117,7 +111,7 @@ export class TransactionFormatter {
     }
   }
 
-  private formMeta(meta: any): ConfirmedTransactionMeta {
+  formMeta(meta) {
     return {
       err: meta.errorInfo ? { err: meta.errorInfo } : null,
       fee: meta.fee,
