@@ -1,37 +1,33 @@
+import "dotenv/config";
 import grpc from "@triton-one/yellowstone-grpc";
 const Client = grpc.default;
-const { CommitmentLevel } = grpc;
-
-import { PublicKey } from "@solana/web3.js";
+const {
+  CommitmentLevel,
+  SubscribeRequestAccountsDataSlice,
+  SubscribeRequestFilterAccounts,
+  SubscribeRequestFilterBlocks,
+  SubscribeRequestFilterBlocksMeta,
+  SubscribeRequestFilterEntry,
+  SubscribeRequestFilterSlots,
+  SubscribeRequestFilterTransactions,
+} = grpc;
+import { SubscribeRequestPing } from "@triton-one/yellowstone-grpc/dist/grpc/geyser";
+import { VersionedTransactionResponse } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
-import { TransactionFormatter } from "./utils/transaction-formatter.js";
-import anchorPkg from '@project-serum/anchor';
-const { Idl } = anchorPkg;
-// import { createRequire } from 'module';
-// const require = createRequire(import.meta.url);
-import { readFile } from 'fs/promises';
-const pumpFunIdl = JSON.parse(
-  await readFile(new URL('./idls/pump_0.1.0.json', import.meta.url))
-);
-import { SolanaEventParser } from "./utils/event-parser.js";
-import { bnLayoutFormatter } from "./utils/bn-layout-formatter.js";
-import dotenv from 'dotenv';
-dotenv.config();
+import { TransactionFormatter } from "./utils/transaction-formatter";
+import { RaydiumAmmParser } from "./parsers/raydium-amm-parser";
+import { LogsParser } from "./parsers/logs-parser";
+import { bnLayoutFormatter } from "./utils/bn-layout-formatter";
 
+const RAYDIUM_PUBLIC_KEY = RaydiumAmmParser.PROGRAM_ID;
 const TXN_FORMATTER = new TransactionFormatter();
-const PUMP_FUN_PROGRAM_ID = new PublicKey(
-  "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+const raydiumAmmParser = new RaydiumAmmParser();
+const IX_PARSER = new SolanaParser([]);
+IX_PARSER.addParser(
+  RaydiumAmmParser.PROGRAM_ID,
+  raydiumAmmParser.parseInstruction.bind(raydiumAmmParser),
 );
-const PUMP_FUN_IX_PARSER = new SolanaParser([]);
-PUMP_FUN_IX_PARSER.addParserFromIdl(
-  PUMP_FUN_PROGRAM_ID.toBase58(),
-  pumpFunIdl,
-);
-const PUMP_FUN_EVENT_PARSER = new SolanaEventParser([], console);
-PUMP_FUN_EVENT_PARSER.addParserFromIdl(
-  PUMP_FUN_PROGRAM_ID.toBase58(),
-  pumpFunIdl,
-);
+const LOGS_PARSER = new LogsParser();
 
 async function handleStream(client, args) {
   // Subscribe for events
@@ -59,15 +55,16 @@ async function handleStream(client, args) {
         data.transaction,
         Date.now(),
       );
-      const parsedTxn = decodePumpFunTxn(txn);
+      const parsedTxn = decodeRaydiumTxn(txn);
 
       if (!parsedTxn) return;
 
       console.log(
-        new Date(),
-        ":",
-        `New transaction https://translator.shyft.to/tx/${txn.transaction.signatures[0]} \n`,
-        JSON.stringify(parsedTxn, null, 2) + "\n",
+        // new Date(),
+        // ":",
+        // `New transaction https://translator.shyft.to/tx/${txn.transaction.signatures[0]} \n`,
+        // JSON.stringify(parsedTxn, null, 2) + "\n",
+        txn.transaction.signatures[0],
       );
     }
   });
@@ -100,11 +97,6 @@ async function subscribeCommand(client, args) {
   }
 }
 
-if (!process.env.ENDPOINT || !process.env.X_TOKEN) {
-  console.error('Error: ENDPOINT and X_TOKEN environment variables are required');
-  process.exit(1);
-}
-
 const client = new Client(
   process.env.ENDPOINT,
   process.env.X_TOKEN,
@@ -115,11 +107,11 @@ const req = {
   accounts: {},
   slots: {},
   transactions: {
-    pumpFun: {
+    raydiumLiquidityPoolV4: {
       vote: false,
       failed: false,
       signature: undefined,
-      accountInclude: [PUMP_FUN_PROGRAM_ID.toBase58()],
+      accountInclude: [RAYDIUM_PUBLIC_KEY.toBase58()],
       accountExclude: [],
       accountRequired: [],
     },
@@ -130,26 +122,23 @@ const req = {
   blocksMeta: {},
   accountsDataSlice: [],
   ping: undefined,
-  commitment: CommitmentLevel.CONFIRMED,
+  commitment: CommitmentLevel.PROCESSED,
 };
 
 subscribeCommand(client, req);
 
-function decodePumpFunTxn(tx) {
+function decodeRaydiumTxn(tx) {
   if (tx.meta?.err) return;
 
-  const paredIxs = PUMP_FUN_IX_PARSER.parseTransactionData(
-    tx.transaction.message,
-    tx.meta.loadedAddresses,
+  const parsedIxs = IX_PARSER.parseTransactionWithInnerInstructions(tx);
+
+  const programIxs = parsedIxs.filter((ix) =>
+    ix.programId.equals(RAYDIUM_PUBLIC_KEY),
   );
 
-  const pumpFunIxs = paredIxs.filter((ix) =>
-    ix.programId.equals(PUMP_FUN_PROGRAM_ID),
-  );
-
-  if (pumpFunIxs.length === 0) return;
-  const events = PUMP_FUN_EVENT_PARSER.parseEvent(tx);
-  const result = { instructions: pumpFunIxs, events };
+  if (programIxs.length === 0) return;
+  const LogsEvent = LOGS_PARSER.parse(parsedIxs, tx.meta.logMessages);
+  const result = { instructions: parsedIxs, events: LogsEvent };
   bnLayoutFormatter(result);
   return result;
 }
