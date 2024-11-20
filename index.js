@@ -1,4 +1,4 @@
-import Client, { CommitmentLevel } from "@triton-one/yellowstone-grpc";
+import { GeyserGrpcClient, CommitmentLevel } from "@triton-one/yellowstone-grpc";
 import { PublicKey } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
 import { TransactionFormatter } from "./utils/transaction-formatter.js";
@@ -102,7 +102,7 @@ if (!process.env.ENDPOINT || !process.env.X_TOKEN) {
   process.exit(1);
 }
 
-const client = new Client(
+const client = new GeyserGrpcClient(
   process.env.ENDPOINT,
   process.env.X_TOKEN,
   undefined,
