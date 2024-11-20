@@ -91,8 +91,13 @@ async function subscribeCommand(client, args) {
   }
 }
 
+if (!process.env.ENDPOINT || !process.env.X_TOKEN) {
+  console.error('Error: ENDPOINT and X_TOKEN environment variables are required');
+  process.exit(1);
+}
+
 const client = new Client(
-  process.env.ENDPOINT!,
+  process.env.ENDPOINT,
   process.env.X_TOKEN,
   undefined,
 );
