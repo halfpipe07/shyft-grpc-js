@@ -15,7 +15,7 @@ A real-time transaction monitoring system for Solana blockchain, specifically tr
 
 - Node.js (v16 or higher)
 - npm or yarn
-- Yellowstone-GRPC endpoint access
+- Yellowstone-GRPC endpoint access, check out [Shyft](https://shyft.to/)
 - Access token for the GRPC service
 
 ## Installation
