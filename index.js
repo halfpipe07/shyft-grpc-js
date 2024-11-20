@@ -2,7 +2,8 @@ import Client, { CommitmentLevel } from "@triton-one/yellowstone-grpc";
 import { PublicKey } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
 import { TransactionFormatter } from "./utils/transaction-formatter.js";
-import pumpFunIdl from "./idls/pump_0.1.0.json";
+import { Idl } from "@project-serum/anchor";
+import pumpFunIdl from "./idls/pump_0.1.0.json" assert { type: "json" };
 import { SolanaEventParser } from "./utils/event-parser.js";
 import { bnLayoutFormatter } from "./utils/bn-layout-formatter.js";
 import dotenv from 'dotenv';
@@ -15,12 +16,12 @@ const PUMP_FUN_PROGRAM_ID = new PublicKey(
 const PUMP_FUN_IX_PARSER = new SolanaParser([]);
 PUMP_FUN_IX_PARSER.addParserFromIdl(
   PUMP_FUN_PROGRAM_ID.toBase58(),
-  pumpFunIdl as Idl,
+  pumpFunIdl,
 );
 const PUMP_FUN_EVENT_PARSER = new SolanaEventParser([], console);
 PUMP_FUN_EVENT_PARSER.addParserFromIdl(
   PUMP_FUN_PROGRAM_ID.toBase58(),
-  pumpFunIdl as Idl,
+  pumpFunIdl,
 );
 
 async function handleStream(client: Client, args: SubscribeRequest) {
