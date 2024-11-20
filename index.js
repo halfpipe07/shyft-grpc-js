@@ -1,11 +1,11 @@
-import pkg from '@triton-one/yellowstone-grpc';
-const { GeyserGrpcClient, CommitmentLevel } = pkg;
+import yellowstoneGrpc from '@triton-one/yellowstone-grpc';
+const { GeyserGrpcClient, CommitmentLevel } = yellowstoneGrpc;
 
 import { PublicKey } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
 import { TransactionFormatter } from "./utils/transaction-formatter.js";
-import pkg from '@project-serum/anchor';
-const { Idl } = pkg;
+import anchorPkg from '@project-serum/anchor';
+const { Idl } = anchorPkg;
 // import { createRequire } from 'module';
 // const require = createRequire(import.meta.url);
 import { readFile } from 'fs/promises';
