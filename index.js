@@ -4,7 +4,7 @@ const { CommitmentLevel } = grpc;
 
 import { PublicKey } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
-import { TransactionFormatter } from "./utils/transaction-formatter.js";
+import { PumpFunTransactionFormatter } from "./utils/pf-transaction-formatter.js";
 import anchorPkg from '@project-serum/anchor';
 const { Idl } = anchorPkg;
 // import { createRequire } from 'module';
@@ -18,7 +18,7 @@ import { bnLayoutFormatter } from "./utils/bn-layout-formatter.js";
 import dotenv from 'dotenv';
 dotenv.config();
 
-const TXN_FORMATTER = new TransactionFormatter();
+const TXN_FORMATTER = new PumpFunTransactionFormatter();
 const PUMP_FUN_PROGRAM_ID = new PublicKey(
   "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
 );

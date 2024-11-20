@@ -1,12 +1,13 @@
-import { Idl } from "@project-serum/anchor";
-import {
-  LogContext,
-  ParsedInstruction,
-} from "@shyft-to/solana-transaction-parser";
+import anchorPkg from '@project-serum/anchor';
+const { Idl } = anchorPkg;
+// import {
+//   LogContext,
+//   ParsedInstruction,
+// } from "@shyft-to/solana-transaction-parser";
 import { struct, u8 } from "@solana/buffer-layout";
 import { u64, u128, publicKey } from "@solana/buffer-layout-utils";
-import { PublicKey } from "@solana/web3.js";
-import { LogEvent } from ".";
+// import { PublicKey } from "@solana/web3.js";
+// import { LogsParser } from "./index.js";
 
 const LOG_TO_INSTRUCTION_MAP = {
   Init: "initialize",

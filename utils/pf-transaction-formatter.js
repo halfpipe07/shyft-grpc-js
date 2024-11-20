@@ -1,11 +1,7 @@
-import {
-  Message,
-  MessageV0,
-  PublicKey,
-} from "@solana/web3.js";
+import { Message, MessageV0, PublicKey } from "@solana/web3.js";
 import { utils } from "@project-serum/anchor";
 
-export function TransactionFormatter() {
+export function PumpFunTransactionFormatter() {
   this.formTransactionFromJson = function(data, time) {
     const rawTx = data["transaction"];
 

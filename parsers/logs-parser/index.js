@@ -1,14 +1,17 @@
 import {
-  ParsedInstruction,
+  // ParsedInstruction,
   parseLogs,
 } from "@shyft-to/solana-transaction-parser";
-import { Idl } from "@project-serum/anchor";
-import { RaydiumAmmParser } from "../raydium-amm-parser";
-import { RaydiumAmmLogsParser } from "./raydium-amm-logs-parser";
+
+import anchorPkg from '@project-serum/anchor';
+const { Idl } = anchorPkg;
+
+import { RaydiumAmmParser } from "../raydium-amm-parser.js";
+import { RaydiumAmmLogsParser } from "./raydium-amm-logs-parser.js";
 
 const RAYDIUM_AMM_PROGRAM_ID = RaydiumAmmParser.PROGRAM_ID.toBase58();
 
-function LogsParser() {
+export function LogsParser() {
   this.raydiumAmmLogsParser = new RaydiumAmmLogsParser();
 
   this.parse = function(actions, logMessages) {
@@ -42,7 +45,3 @@ function LogsParser() {
     );
   }
 }
-
-module.exports = {
-  LogsParser
-};
