@@ -6,7 +6,10 @@ import pkg from '@project-serum/anchor';
 const { Idl } = pkg;
 // import { createRequire } from 'module';
 // const require = createRequire(import.meta.url);
-import pumpFunIdl from './idls/pump_0.1.0.json' assert { type: "json" };
+import { readFile } from 'fs/promises';
+const pumpFunIdl = JSON.parse(
+  await readFile(new URL('./idls/pump_0.1.0.json', import.meta.url))
+);
 import { SolanaEventParser } from "./utils/event-parser.js";
 import { bnLayoutFormatter } from "./utils/bn-layout-formatter.js";
 import dotenv from 'dotenv';
