@@ -1,4 +1,4 @@
-# Solana Transaction Monitor
+# Solana Transaction Monitor - Streaming through gRPC
 
 A real-time transaction monitoring system for Solana blockchain, specifically tracking transactions related to Raydium AMM and PumpFun protocols.
 
