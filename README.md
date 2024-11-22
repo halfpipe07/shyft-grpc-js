@@ -53,7 +53,7 @@ node raydium.js
 
 To monitor PumpFun protocol transactions:
 ```bash
-node index.js
+node pumpfun.js
 ```
 
 ## Environment Variables

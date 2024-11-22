@@ -17,14 +17,17 @@ const { Idl } = anchorPkg;
 // import { VersionedTransactionResponse } from "@solana/web3.js";
 import { SolanaParser } from "@shyft-to/solana-transaction-parser";
 import { LIQUIDITY_STATE_LAYOUT_V4 } from "@raydium-io/raydium-sdk";
+import { PublicKey } from "@solana/web3.js";
 
 import { RaydiumTransactionFormatter } from "./utils/raydium-transaction-formatter.js";
 import { RaydiumAmmParser } from "./parsers/raydium-amm-parser.js";
 import { LogsParser } from "./parsers/logs-parser/index.js";
 import { bnLayoutFormatter } from "./utils/bn-layout-formatter.js";
-import { analyzeSolanaTransaction } from "./utils/sol-txn-formatter.js";
+import { humanizeTransactions } from "./custom/humanize-transactions.js";
 
-import fs from 'fs';
+const PUMP_FUN_PROGRAM_ID = new PublicKey(
+  "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+);
 
 const RAYDIUM_PUBLIC_KEY = RaydiumAmmParser.PROGRAM_ID;
 const TXN_FORMATTER = new RaydiumTransactionFormatter();
@@ -35,16 +38,6 @@ IX_PARSER.addParser(
   raydiumAmmParser.parseInstruction.bind(raydiumAmmParser),
 );
 const LOGS_PARSER = new LogsParser();
-
-function printToFile(obj, filename = 'sample') {
-  fs.writeFile(`${filename}.js`, JSON.stringify( obj ), function(err) {
-     if(err) {
-         return console.log(err);
-     }
-
-     console.log("The file was saved!");
-  });
-}
 
 async function handleStream(client, args) {
   // Subscribe for events
@@ -78,8 +71,12 @@ async function handleStream(client, args) {
       const parsedTxn = decodeRaydiumTxn(txn);
       if (!parsedTxn) return;
 
-      const analyzedTxn = analyzeSolanaTransaction(txn, parsedTxn);
+      const analyzedTxn = humanizeTransactions(txn, parsedTxn);
       console.log(analyzedTxn);
+
+      // if(analyzedTxn?.swapEvents[0]?.token_add == "3K4q4zLg4p2B5vD4a6rA79N4nswE8GKb1dEpVCvdpump") {
+      //   console.log(analyzedTxn);
+      // }
 
       // if(analyzedTxn?.swapEvents?.length > 1)
 
@@ -92,7 +89,7 @@ async function handleStream(client, args) {
       //   printToFile(parsedTxnArr);
       // }
 
-      console.log("\x1b[32m"+txn.transaction.signatures[0]+"\x1b[0m");
+      // console.log("\x1b[32m"+txn.transaction.signatures[0]+"\x1b[0m");
     }
   });
 
@@ -171,10 +168,18 @@ subscribeCommand(client, {
       vote: false,
       failed: false,
       signature: undefined,
-      accountInclude: [RAYDIUM_PUBLIC_KEY.toBase58()],
+      accountInclude: [RAYDIUM_PUBLIC_KEY.toBase58(), PUMP_FUN_PROGRAM_ID.toBase58()],
       accountExclude: [],
       accountRequired: [],
     },
+    // pumpFun: {
+    //   vote: false,
+    //   failed: false,
+    //   signature: undefined,
+    //   accountInclude: [PUMP_FUN_PROGRAM_ID.toBase58()],
+    //   accountExclude: [],
+    //   accountRequired: [],
+    // },
   },
   transactionsStatus: {},
   entry: {},

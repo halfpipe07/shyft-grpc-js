@@ -15,8 +15,14 @@ const pumpFunIdl = JSON.parse(
 );
 import { SolanaEventParser } from "./utils/event-parser.js";
 import { bnLayoutFormatter } from "./utils/bn-layout-formatter.js";
+import { humanizeTransactions } from "./custom/humanize-transactions.js";
+
+import { printToFile } from "./custom/utils.js";
 import dotenv from 'dotenv';
 dotenv.config();
+
+// import { RaydiumAmmParser } from "./parsers/raydium-amm-parser.js";
+// const RAYDIUM_PUBLIC_KEY = RaydiumAmmParser.PROGRAM_ID;
 
 const TXN_FORMATTER = new PumpFunTransactionFormatter();
 const PUMP_FUN_PROGRAM_ID = new PublicKey(
@@ -60,15 +66,24 @@ async function handleStream(client, args) {
         Date.now(),
       );
       const parsedTxn = decodePumpFunTxn(txn);
-
       if (!parsedTxn) return;
 
-      console.log(
-        new Date(),
-        ":",
-        `New transaction https://translator.shyft.to/tx/${txn.transaction.signatures[0]} \n`,
-        JSON.stringify(parsedTxn, null, 2) + "\n",
-      );
+      // printToFile({ txn, parsedTxn });
+
+      // if(parsedTxn.events.length > 1)
+      //   console.log(parsedTxn.events, txn.transaction.signatures[0]);
+
+      const analyzedTxn = humanizeTransactions(txn, parsedTxn, "pumpfun");
+
+      if(analyzedTxn.swapEvents.length > 1)
+        console.log(analyzedTxn);
+
+      // console.log(
+      //   new Date(),
+      //   ":",
+      //   `New transaction https://translator.shyft.to/tx/${txn.transaction.signatures[0]} \n`,
+      //   JSON.stringify(parsedTxn, null, 2) + "\n",
+      // );
     }
   });
 
