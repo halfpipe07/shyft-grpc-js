@@ -111,6 +111,19 @@ const client = new Client(
   undefined,
 );
 
+// const pumpfunCompletedBC = {
+//   "account": [],
+//   "filters": [
+//     {
+//       "memcmp": {
+//         "offset": structure.offsetOf('complete').toString(), // Hack to filter for swapped. There is probably a better way to do this
+//         "bytes" : Uint8Array.from([1])
+//       }
+//     }
+//   ],
+//   "owner": [pumpfun] // raydium program id to subscribe to
+// }
+
 const req = {
   accounts: {},
   slots: {},

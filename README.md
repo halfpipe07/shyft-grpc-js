@@ -71,6 +71,7 @@ The monitors will output:
 - Program events
 - Transaction timestamps
 - Links to transaction details on Shyft Explorer
+- Bonus: created `analyzeSolanaTransaction` function to make Raydium events readable in swap format
 
 ## Error Handling
 
