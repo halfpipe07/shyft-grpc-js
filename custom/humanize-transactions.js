@@ -1,8 +1,7 @@
 import { swapInstruction, SwapMath } from "@raydium-io/raydium-sdk";
+import { constants } from "./constants.js";
 
-const SPL_MINT = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
-const WSOL_MINT = 'So11111111111111111111111111111111111111112';
-const RAYDIUM_AUTHORITY_V4 = '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1';
+const { SPL_MINT, WSOL_MINT, RAYDIUM_AUTHORITY_V4 } = constants;
 
 function findBalanceChanges(preBalances, postBalances, ignoreAccount = null) {
     const changes = [];
@@ -13,8 +12,7 @@ function findBalanceChanges(preBalances, postBalances, ignoreAccount = null) {
             p.mint === pre.mint
         );
 
-        if (post && pre.owner !== ignoreAccount) {
-        // if (post && pre.owner !== ignoreAccount && pre.owner == RAYDIUM_AUTHORITY_V4) {
+        if (post && pre.owner !== ignoreAccount && pre.owner == RAYDIUM_AUTHORITY_V4) {
             const change = {
                 mint: pre.mint,
                 owner: pre.owner,
@@ -194,8 +192,8 @@ export function humanizeTransactions(rawTxn, parsedTxn, type = "raydium") {
     let changes = [];
 
     try {
-        // Get basic transaction info
-        // and find the SPL tokens swaps
+
+      // Get basic transaction info
         if (rawTxn) {
             result.timestamp = rawTxn.blockTime;
             result.slot = rawTxn.slot;
@@ -230,6 +228,7 @@ export function humanizeTransactions(rawTxn, parsedTxn, type = "raydium") {
           throw new Error('Missing swap event or instruction');
         }
 
+        // Parsing event transactions
         if(type === "pumpfun") {
 
           // Get transaction event data
